@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 
+#include "Helper.h"
+
 class Vec3
 {
 public:
@@ -73,8 +75,17 @@ inline Vec3 UnitVector(Vec3 v) {
     return v / std::sqrt(v.LengthSquared());
 }
 
-void WriteColor(std::ostream& out, Vec3 pixelColor) {
-    out << static_cast<int>(255.999 * pixelColor.x) << ' '
-        << static_cast<int>(255.999 * pixelColor.y) << ' '
-        << static_cast<int>(255.999 * pixelColor.z) << '\n';
+void WriteColor(std::ostream& out, Vec3 pixelColor, int samples) {
+    auto r = pixelColor.x;
+    auto g = pixelColor.y;
+    auto b = pixelColor.z;
+
+    auto scale = 1.0 / samples;
+    r *= scale;
+    g *= scale;
+    b *= scale;
+
+    out << static_cast<int>(255.999 * Helper::Clamp(r, 0.0, 0.999)) << ' '
+        << static_cast<int>(255.999 * Helper::Clamp(g, 0.0, 0.999)) << ' '
+        << static_cast<int>(255.999 * Helper::Clamp(b, 0.0, 0.999)) << '\n';
 }

@@ -7,9 +7,9 @@ public:
     Sphere(Vec3 center, double r) : Center(center), Radius(r) { };
 
     virtual bool Hit(const Ray& r, double tMin, double tMax, HitRecord& hr) const override {
-        Vec3 oc = r.origin - Center;
-        auto a = r.direction.LengthSquared();
-        auto halfB = Dot(oc, r.direction);
+        Vec3 oc = r.Origin - Center;
+        auto a = r.Direction.LengthSquared();
+        auto halfB = Dot(oc, r.Direction);
         auto c = oc.LengthSquared() - Radius * Radius;
         auto d = halfB * halfB - a * c;
         if (d < 0) return false;
@@ -22,9 +22,9 @@ public:
                 return false;
         }
 
-        hr.Distance = root;
-        hr.Pt = r.At(hr.Distance);
-        hr.Normal = (hr.Pt - Center) / Radius;
+        hr.T = root;
+        hr.Pt = r.At(hr.T);
+        hr.SetNormal(r, (hr.Pt - Center) / Radius);
 
         return true;
     }

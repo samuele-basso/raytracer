@@ -20,4 +20,28 @@ namespace Helper
         }
     }
 
+    inline double RandomDouble() {
+        return rand() / (RAND_MAX + 1.0);
+    }
+
+    inline double RandomDouble(double min, double max) {
+        return min + (max - min) * RandomDouble();
+    }
+
+    inline double Clamp(double x, double min, double max) {
+        if (x < min) return min;
+        if (x > max) return max;
+        return x;
+    }
+
+    namespace Math
+    {
+        const double PI = 3.1415926535897932385;
+        const double INF = std::numeric_limits<double>::infinity();
+
+        inline double DegToRad(double degrees) {
+            return degrees * PI / 180.0;
+        }
+    }
+
 }
