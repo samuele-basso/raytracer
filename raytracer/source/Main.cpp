@@ -33,10 +33,16 @@ double HitSphereV2(const Vec3& center, double radius, const Ray& r) {
         return (-halfB - sqrt(d)) / a;
 }
 
-Vec3 RayColor(const Ray& r, const HittableList& world) {
+Vec3 RayColor(const Ray& r, const HittableList& world, int depth) {
     HitRecord hr;
-    if (world.Hit(r, 0, Helper::Math::INF, hr)) {
-        return (hr.Normal + Vec3(1, 1, 1)) * 0.5;
+
+    if (depth <= 0)
+        return Vec3(0, 0, 0);
+
+    if (world.Hit(r, 0.001, Helper::Math::INF, hr)) {
+
+        Vec3 target = hr.Pt + hr.Normal + RandomUnitVector();
+        return RayColor(Ray(hr.Pt, target - hr.Pt), world, depth-1) * 0.5;
     }
     Vec3 unitDirection = UnitVector(r.Direction);
     auto t = 0.5 * (unitDirection.y + 1.0);
@@ -47,7 +53,7 @@ int main() {
     const auto aspectRatio = 16.0 / 9.0;
     const int iw = 400;
     const int ih = static_cast<int>(iw / aspectRatio);
-    const int samples = 256;
+    const int samples = 512;
 
     HittableList world;
     world.Add(std::make_shared<Sphere>(Vec3(0, 0, -1), 0.5));
@@ -68,7 +74,7 @@ int main() {
                 auto u = (i + Helper::RandomDouble()) / (iw - 1);
                 auto v = (j + Helper::RandomDouble()) / (ih - 1);
                 Ray r = camera.GetRay(u, v);
-                pixelColor += RayColor(r, world);
+                pixelColor += RayColor(r, world, 100);
             }
             WriteColor(std::cout, pixelColor, samples);
         }

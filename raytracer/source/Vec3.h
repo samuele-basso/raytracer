@@ -33,6 +33,14 @@ public:
         return x*x + y*y + z*z;
     }
 
+    inline static Vec3 Random() {
+        return Vec3(Helper::RandomDouble(), Helper::RandomDouble(), Helper::RandomDouble());
+    }
+
+    inline static Vec3 Random(double min, double max) {
+        return Vec3(Helper::RandomDouble(min, max), Helper::RandomDouble(min, max), Helper::RandomDouble(min, max));
+    }
+
 public:
     double x, y, z;
 };
@@ -75,15 +83,26 @@ inline Vec3 UnitVector(Vec3 v) {
     return v / std::sqrt(v.LengthSquared());
 }
 
+Vec3 RandomPtUnitSphere() {
+    while (true) {
+        auto p = Vec3::Random(-1, 1);
+        if (p.LengthSquared() < 1) return p;
+    }
+}
+
+Vec3 RandomUnitVector() {
+    return UnitVector(RandomPtUnitSphere());
+}
+
 void WriteColor(std::ostream& out, Vec3 pixelColor, int samples) {
     auto r = pixelColor.x;
     auto g = pixelColor.y;
     auto b = pixelColor.z;
 
     auto scale = 1.0 / samples;
-    r *= scale;
-    g *= scale;
-    b *= scale;
+    r = sqrt(scale * r);
+    g = sqrt(scale * g);
+    b = sqrt(scale * b);
 
     out << static_cast<int>(255.999 * Helper::Clamp(r, 0.0, 0.999)) << ' '
         << static_cast<int>(255.999 * Helper::Clamp(g, 0.0, 0.999)) << ' '
