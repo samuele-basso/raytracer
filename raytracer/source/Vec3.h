@@ -33,6 +33,11 @@ public:
         return x*x + y*y + z*z;
     }
 
+    bool NearZero() const {
+        const auto s = 1e-8;
+        return (fabs(x) < s) && (fabs(y) < s) && (fabs(z) < s);
+    }
+
     inline static Vec3 Random() {
         return Vec3(Helper::RandomDouble(), Helper::RandomDouble(), Helper::RandomDouble());
     }
