@@ -99,6 +99,13 @@ Vec3 RandomUnitVector() {
     return UnitVector(RandomPtUnitSphere());
 }
 
+Vec3 RandomUnitDisk() {
+    while (true) {
+        auto p = Vec3(Helper::RandomDouble(-1, 1), Helper::RandomDouble(-1, 1), 0);
+        if (p.LengthSquared() < 1) return p;
+    }
+}
+
 void WriteColor(std::ostream& out, Vec3 pixelColor, int samples) {
     auto r = pixelColor.x;
     auto g = pixelColor.y;

@@ -5,24 +5,41 @@
 
 class Camera {
 public:
-    Camera() {
-        auto aspect = 16.0 / 9.0;
-        auto viewportHeight = 2.0;
-        auto viewportWidth = aspect * viewportHeight;
-        auto focalLength = 1.0;
+    Camera(Vec3 lookFrom, Vec3 lookAt, Vec3 vup, double fov, double aspectRatio, double aperture, double focusDistance) {
+        auto theta = Helper::Math::DegToRad(fov);
+        auto h = tan(theta / 2);
+        auto viewportHeight = 2.0 * h;
+        auto viewportWidth = aspectRatio * viewportHeight;
 
-        Origin = Vec3(0, 0, 0);
-        Horizontal = Vec3(viewportWidth, 0.0, 0.0);
-        Vertical = Vec3(0.0, viewportHeight, 0.0);
-        LowerLeftCorner = Origin - Horizontal / 2 - Vertical / 2 - Vec3(0, 0, focalLength);
+        auto focalLength = 1.0;
+        W = UnitVector(lookFrom - lookAt);
+        U = UnitVector(Cross(vup, W));
+        V = Cross(W, U);
+
+        Origin = lookFrom;
+        Horizontal = U*viewportWidth*focusDistance;
+        Vertical = V*viewportHeight*focusDistance;
+        LowerLeftCorner = Origin - Horizontal / 2 - Vertical / 2 - W*focusDistance;
+
+        LensRadius = aperture / 2;
     }
 
-    Ray GetRay(double u, double v) const {
-        return Ray(Origin, LowerLeftCorner + Horizontal*u + Vertical*v - Origin);
+    Ray GetRay(double s, double t) const {
+        Vec3 rd = RandomUnitDisk()*LensRadius;
+        Vec3 offset = U * rd.x + V * rd.y;
+
+        return Ray(
+            Origin + offset,
+            LowerLeftCorner + Horizontal*s + Vertical*t - Origin - offset
+        );
+
+        return Ray(Origin, LowerLeftCorner + Horizontal*s + Vertical*t - Origin);
     }
 
 private:
     Vec3 Origin;
     Vec3 LowerLeftCorner;
     Vec3 Horizontal, Vertical;
+    Vec3 U, V, W;
+    double LensRadius;
 };
